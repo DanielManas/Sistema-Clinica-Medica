@@ -19,11 +19,9 @@ O objetivo do sistema é auxiliar no gerenciamento de informações de uma clín
 
 Os dados serão manipulados pelo programa em C e armazenados no banco de dados, permitindo que permaneçam disponíveis mesmo após o encerramento do programa.
 
-Principais Funcionalidades
+## Principais Funcionalidades
 
-O sistema contará com as seguintes funcionalidades:
-
-## Pacientes
+### Pacientes
 
 * Cadastrar pacientes;
 
@@ -39,24 +37,36 @@ O sistema contará com as seguintes funcionalidades:
 
 * Ordenar pacientes por idade.
 
-## Médicos
+### Médicos
 
-Cadastrar médicos;
+* Cadastrar médicos;
 
-Cadastrar e identificar suas especialidades;
+* Cadastrar e identificar suas especialidades;
 
-Listar médicos cadastrados;
+* Listar médicos cadastrados;
 
-Pesquisar médicos.
+* Pesquisar médicos.
 
-Consultas
+* Consultas
 
-Agendar consultas;
+* Agendar consultas;
 
-Cancelar consultas;
+* Cancelar consultas;
 
-Listar consultas;
+* Listar consultas;
 
-Listar consultas de determinado paciente;
+* Listar consultas de determinado paciente;
 
-Listar consultas de determinado médico.
+* Listar consultas de determinado médico.
+
+### Consultas
+
+* Agendar consultas;
+
+* Cancelar consultas;
+
+* Listar consultas;
+
+* Listar consultas de determinado paciente;
+
+* Listar consultas de determinado médico.
