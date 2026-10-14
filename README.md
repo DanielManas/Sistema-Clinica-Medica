@@ -67,6 +67,18 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 
 * Listar consultas;
 
+## Algoritmos Implementados
+
+### Busca Linear
+
+Será utilizada para realizar pesquisas percorrendo sequencialmente um array de structs até encontrar o registro desejado.
+
+### Busca Binária
+
+Será implementada uma busca binária sobre dados previamente ordenados.
+
+Como a busca binária exige que os dados estejam ordenados, o sistema realizará a ordenação necessária antes da execução da busca.
+
 * Listar consultas de determinado paciente;
 
 * Listar consultas de determinado médico.
