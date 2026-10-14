@@ -3,13 +3,16 @@ Simulador Banco de Dados de Clinica Medica para o projeto final do curso de Prog
 
 Projeto Integrador desenvolvido para a disciplina de Algoritmos e Programação II do curso de Engenharia da Computação.
 
+**PRECISA MELHORAR O README**
+
+
 ## Integrantes
 
 Daniel Manasterski
 
-NOME
+Pedro Bender
 
-NOME
+Jhonny ...
 
 ## Descrição do Projeto
 
