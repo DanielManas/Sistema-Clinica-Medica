@@ -39,8 +39,10 @@ void cadastrarPaciente(MYSQL *conn)
     }
 }
 
-void listarPacientes(MYSQL *conn) 
+void listarPacientes() 
 {
     printf("\n--- LISTA DE PACIENTES ---\n");
-    //printf("[Funcionalidade em desenvolvimento...]\n");
+    printf("ID | NOME COMPLETO | CPF | TELEFONE\n");
+    printf("-----------------------------------\n");
+    printf("[Nenhum paciente cadastrado na memoria no momento]\n");
 }
