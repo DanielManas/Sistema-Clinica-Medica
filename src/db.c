@@ -14,7 +14,7 @@ MYSQL* conectarBanco()
 
     // Tenta conectar ao banco
     // Parametros: estrutura, host, usuario, senha, nome do banco, porta, socket, flags
-    if (mysql_real_connect(conn, "localhost", "root", "colocar_a_senha_do_bd_aqui", "clinica_medica", 3306, NULL, 0) == NULL) {
+    if (mysql_real_connect(conn, "localhost", "root", "123456", "clinica_medica", 3306, NULL, 0) == NULL) {
         printf("\n[ERRO] Falha na conexao com o banco: %s\n", mysql_error(conn));
         mysql_close(conn);
         return NULL;
