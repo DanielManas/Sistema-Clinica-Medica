@@ -23,6 +23,7 @@ void cadastrarPaciente()
     printf("Informe o telefone do paciente: ");
     scanf("%s", &p.telefone);
 
+    printf("\nPaciente %s %s foi cadastrado com sucesso!\n", p.nome, p.sobrenome);
 }
 
 void listarPacientes() 
