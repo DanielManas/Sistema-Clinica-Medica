@@ -2,7 +2,6 @@
 
 int main() 
 {
-    printf("Sistema de Clinica Medica\n");
-
+    printf("Sistema de Clinica Medica - Projeto Integrador\n");
     return 0;
 }
