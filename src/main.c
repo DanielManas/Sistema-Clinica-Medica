@@ -29,11 +29,11 @@ int main()
                 break;
             case(2):
                 printf("Opção 2 selecionada: Médicos\n");
-                printf("cadastrarMedico()");
+                cadastrarMedico();
                 break;
             case(3):
                 printf("Opção 3 selecionada: Consultas\n");
-                printf("agendarConsulta()");
+                agendarConsulta();
                 break;
             case(4):
                 printf("Opção 4 selecionada: Buscar\n");
