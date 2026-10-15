@@ -25,7 +25,7 @@ int main()
             case(1):
                 printf("Opção 1 selecionada: Pacientes\n");
                 cadastrarPaciente(conn);
-                listarPacientes(conn);
+                listarPacientes();
                 break;
             case(2):
                 printf("Opção 2 selecionada: Médicos\n");
