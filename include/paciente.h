@@ -1,6 +1,7 @@
 
 #ifndef PACIENTE_H
 #define PACIENTE_H
+#define MAX_PACIENTES = 100
 
 typedef struct
 {
@@ -11,7 +12,7 @@ typedef struct
     char telefone[20];
 }  paciente;
 
-void cadastrarPaciente(MYSQL *conn);
-void listarPacientes(MYSQL *conn);
+void cadastrarPaciente(Lista_Pacientes[], int *total);
+void listarPacientes(Lista_Pacientes[], int *total);
 
 #endif
