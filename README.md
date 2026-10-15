@@ -56,7 +56,7 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 
 * Pesquisar médicos.
 
-* Consultas
+### Consultas
 
 * Agendar consultas;
 
@@ -68,13 +68,6 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 
 * Listar consultas de determinado médico.
 
-### Consultas
-
-* Agendar consultas;
-
-* Cancelar consultas;
-
-* Listar consultas;
 
 ## Algoritmos Implementados
 
