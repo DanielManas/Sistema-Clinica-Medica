@@ -11,7 +11,7 @@ typedef struct
     char telefone[20];
 }  paciente;
 
-void cadastrarPaciente();
-void listarPacientes();
+void cadastrarPaciente(MYSQL *conn);
+void listarPacientes(MYSQL *conn);
 
 #endif
