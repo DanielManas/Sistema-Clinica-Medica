@@ -1,5 +1,6 @@
 #include <stdio.h>
-
+#include "../include/paciente.h"
+#include "../include/medico.h"
 
 
 int main() 
