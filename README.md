@@ -16,9 +16,9 @@ Projeto Integrador desenvolvido para a disciplina de Algoritmos e Programação 
 
 Daniel Manasterski
 
-Pedro Bender
+Pedro Bender da Silva Prado
 
-Jhonny ...
+Jhonny Kuanyu Wang
 
 ## Descrição do Projeto
 
