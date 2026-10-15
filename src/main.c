@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../include/paciente.h"
 #include "../include/medico.h"
-
+#include "../include/consulta.h"
 
 int main() 
 {
@@ -24,12 +24,15 @@ int main()
         {
             case(1):
                 printf("Opção 1 selecionada: Pacientes\n");
+                printf("cadastrarPaciente()");
                 break;
             case(2):
                 printf("Opção 2 selecionada: Médicos\n");
+                printf("cadastrarMedico()");
                 break;
             case(3):
                 printf("Opção 3 selecionada: Consultas\n");
+                printf("agendarConsulta()");
                 break;
             case(4):
                 printf("Opção 4 selecionada: Buscar\n");
