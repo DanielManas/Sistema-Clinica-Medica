@@ -9,8 +9,24 @@ void cadastrarPaciente()
 
     printf("Digite o ID: ");
     scanf("%d", &p.id);
-
     getchar();
 
-    //precisa terminar aqui, fui domir
+    printf("Digite o nome do paciente: ");
+    scanf("%s", &p.nome);
+
+    printf("Digite o sobrenome do paciente: ");
+    scanf("%s", &p.sobrenome);
+
+    printf("Informe o CPF do paciente: ");
+    scanf("%s", &p.cpf);
+
+    printf("Informe o telefone do paciente: ");
+    scanf("%s", &p.telefone);
+
+}
+
+void listarPacientes() 
+{
+    printf("\n--- LISTA DE PACIENTES ---\n");
+    //printf("[Funcionalidade em desenvolvimento...]\n");
 }

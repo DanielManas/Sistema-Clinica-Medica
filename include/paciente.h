@@ -4,7 +4,8 @@
 
 typedef struct
 {
-    char nome[50];
+    int id;
+    char nome[20];
     char sobrenome[50];
     char cpf[15];
     char telefone[20];
