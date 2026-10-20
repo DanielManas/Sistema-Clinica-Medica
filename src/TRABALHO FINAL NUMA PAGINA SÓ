@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PACIENTES 100
+
+// 1. ESTRUTURA DE DADOS
+typedef struct {
+    int id;
+    char nome[50];
+    char sobrenome[50];
+    char cpf[15];
+    char telefone[20];
+} paciente;
+
+// 2. DECLARAÇÃO DAS FUNÇÕES
+void cadastrarPaciente(paciente lista[], int *total);
+void listarPacientes(paciente lista[], int total);
+void ordenarPorNome(paciente lista[], int total);
+void buscarPorCPF(paciente lista[], int total);   // Busca Linear
+void buscarPorNome(paciente lista[], int total);  // Busca Binária
+
+// 3. FUNÇÃO PRINCIPAL (MENU)
+int main() {
+    paciente listaPacientes[MAX_PACIENTES];
+    int totalPacientes = 0;
+    int opcao = -1;
+
+    do {
+        printf("\n=== SISTEMA DE CLINICA MEDICA ===\n");
+        printf("1 - Cadastrar Paciente\n");
+        printf("2 - Listar Pacientes\n");
+        printf("3 - Ordenar por Nome (Bubble Sort)\n");
+        printf("4 - Buscar por CPF (Busca Linear)\n");
+        printf("5 - Buscar por Nome (Busca Binaria)\n");
+        printf("0 - Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                cadastrarPaciente(listaPacientes, &totalPacientes);
+                break;
+            case 2:
+                listarPacientes(listaPacientes, totalPacientes);
+                break;
+            case 3:
+                ordenarPorNome(listaPacientes, totalPacientes);
+                listarPacientes(listaPacientes, totalPacientes);
+                break;
+            case 0:
+                printf("\nSaindo do sistema...\n");
+                break;
+            default:
+                printf("\nOpcao invalida!\n");
+                break;
+        }
+
+    } while (opcao != 0);
+
+    return 0;
+}
+
+// 4. IMPLEMENTAÇÃO DAS FUNÇÕES
+void cadastrarPaciente(paciente lista[], int *total) {
+    if (*total >= MAX_PACIENTES) {
+        printf("\nLimite atingido!\n");
+        return;
+    }
+
+    printf("\n--- CADASTRO DE PACIENTE ---\n");
+    printf("ID: ");
+    scanf("%d", &lista[*total].id);
+    getchar();
+
+    printf("Nome: ");
+    scanf("%s", lista[*total].nome);
+
+    printf("Sobrenome: ");
+    scanf("%s", lista[*total].sobrenome);
+
+    printf("CPF: ");
+    scanf("%s", lista[*total].cpf);
+
+    printf("Telefone: ");
+    scanf("%s", lista[*total].telefone);
+
+    (*total)++;
+    printf("\nPaciente cadastrado com sucesso!\n");
+}
+
+void listarPacientes(paciente lista[], int total) {
+    printf("\n--- LISTA DE PACIENTES (%d) ---\n", total);
+    if (total == 0) {
+        printf("Nenhum paciente cadastrado.\n");
+        return;
+    }
+
+    for (int i = 0; i < total; i++) {
+        printf("ID: %d | Nome: %s %s | CPF: %s | Tel: %s\n",
+               lista[i].id, lista[i].nome, lista[i].sobrenome, lista[i].cpf, lista[i].telefone);
+    }
+}
+
+void ordenarPorNome(paciente lista[], int total) {
+    paciente temp;
+    for (int i = 0; i < total - 1; i++) {
+        for (int j = 0; j < total - i - 1; j++) {
+            if (strcmp(lista[j].nome, lista[j + 1].nome) > 0) {
+                temp = lista[j];
+                lista[j] = lista[j + 1];
+                lista[j + 1] = temp;
+            }
+        }
+    }
+    printf("\nLista ordenada por nome com sucesso!\n");
+}
