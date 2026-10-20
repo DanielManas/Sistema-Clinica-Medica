@@ -2,7 +2,7 @@
 #include <string.h>
 #include "../include/paciente.h"
 
-void cadastrarPaciente(Paciente lista[], int *total) 
+void cadastrarPaciente(paciente lista[], int *total) 
 {
     // 1. Verifica se o vetor de pacientes ja esta cheio
     if (*total >= MAX_PACIENTES) 
