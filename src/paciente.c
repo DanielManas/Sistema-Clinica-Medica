@@ -2,47 +2,62 @@
 #include <string.h>
 #include "../include/paciente.h"
 
-void cadastrarPaciente(MYSQL *conn) 
+void cadastrarPaciente(Paciente lista[], int *total) 
 {
-    paciente p;
-    char query[500]; // Array de texto para guardar o comando SQL
+    // 1. Verifica se o vetor de pacientes ja esta cheio
+    if (*total >= MAX_PACIENTES) 
+    {
+        printf("\n[ERRO] Memoria cheia! Nao e possivel cadastrar mais pacientes.\n");
+        return;
+    }
 
     printf("\n--- CADASTRO DE PACIENTE ---\n");
 
+    // 2. Le os dados salvando diretamente na posicao livre do vetor (lista[*total])
     printf("Digite o ID: ");
-    scanf("%d", &p.id);
+    scanf("%d", &lista[*total].id);
     getchar();
 
     printf("Digite o nome do paciente: ");
-    scanf("%s", &p.nome);
+    scanf("%s", lista[*total].nome);
 
     printf("Digite o sobrenome do paciente: ");
-    scanf("%s", &p.sobrenome);
+    scanf("%s", lista[*total].sobrenome);
 
     printf("Informe o CPF do paciente: ");
-    scanf("%s", &p.cpf);
+    scanf("%s", lista[*total].cpf);
 
     printf("Informe o telefone do paciente: ");
-    scanf("%s", &p.telefone);
+    scanf("%s", lista[*total].telefone);
 
-    // Monta o comando SQL INSERT com os dados preenchidos
-    sprintf(query, "INSERT INTO Pacientes (id, nome, sobrenome, cpf, telefone) VALUES (%d, '%s', '%s', '%s', '%s');", p.id, p.nome, p.sobrenome, p.cpf, p.telefone);
+    printf("\n[SUCESSO] Paciente %s %s cadastrado na memoria RAM!\n", 
+           lista[*total].nome, lista[*total].sobrenome);
 
-    // Executa o comando no MySQL
-    if (mysql_query(conn, query) == 0) 
-    {
-        printf("\n[SUCESSO] Paciente %s %s salvo no Banco de Dados!\n", p.nome, p.sobrenome);
-    } 
-    else 
-    {
-        printf("\n[ERRO] Falha ao salvar no banco: %s\n", mysql_error(conn));
-    }
+    // 3. Soma +1 no contador total para o proximo cadastro ir para a posicao seguinte
+    (*total)++;
 }
 
-void listarPacientes() 
+void listarPacientes(Paciente lista[], int total) 
 {
-    printf("\n--- LISTA DE PACIENTES ---\n");
+    printf("\n--- LISTA DE PACIENTES (%d cadastrados) ---\n", total);
+
+    if (total == 0) 
+    {
+        printf("[Nenhum paciente cadastrado na memoria no momento]\n");
+        return;
+    }
+
     printf("ID | NOME COMPLETO | CPF | TELEFONE\n");
     printf("-----------------------------------\n");
-    printf("[Nenhum paciente cadastrado na memoria no momento]\n");
+
+    // Imprime cada paciente guardado no vetor
+    for (int i = 0; i < total; i++) 
+    {
+        printf("%d | %s %s | %s | %s\n", 
+               lista[i].id, 
+               lista[i].nome, 
+               lista[i].sobrenome, 
+               lista[i].cpf, 
+               lista[i].telefone);
+    }
 }
