@@ -1,204 +1,284 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <mysql/mysql.h> 
+#define MAX_REGISTROS 100
 
-#define MAX_PACIENTES 100
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// 1. ESTRUTURA DE DADOS
-typedef struct {
+// ESTRUTURA DADOS DOS PACIENTES 
+typedef struct 
+{
     int id;
-    char nome[50];
-    char sobrenome[50];
+    char nome[100];
+    int idade;
     char cpf[15];
     char telefone[20];
 } paciente;
 
-// 2. DECLARAÇÃO DAS FUNÇÕES
-void cadastrarPaciente(paciente lista[], int *total);
-void listarPacientes(paciente lista[], int total);
-void ordenarPorNome(paciente lista[], int total);
-void buscarPorCPF_Linear(paciente lista[], int total);
-void buscarPorNome_Binaria(paciente lista[], int total, int estaOrdenado);
+// ESTRUTURA DADOS DOS MÉDICOS
+typedef struct 
+{
+    int id;
+    char nome[100];
+    char crm[20];
+    char especialidade[50];
+} medico;
 
-// 3. FUNÇÃO PRINCIPAL (MENU)
-int main() {
-    paciente listaPacientes[MAX_PACIENTES];
-    int totalPacientes = 0;
-    int estaOrdenado = 0; // Controle para saber se a lista foi ordenada antes da busca binaria
-    int opcao = -1;
+// ESTRTURA DADOS CONSULTA
+typedef struct 
+{
+    int id;
+    int idPaciente;
+    int idMedico;
+    char data[11]; // DD/MM/AAAA
+    char hora[9];  // HH:MM
+} consulta;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// LISTAS DE FUNCOES
+
+int compararTextos(char t1[], char t2[]);
+MYSQL* conectarMySQL();
+void carregarDadosDoMySQL(MYSQL *conn, paciente p[], int *totP, medico m[], int *totM, consulta c[], int *totC);
+
+// PACIENTES
+void cadastrarPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado);
+void alterarPaciente(MYSQL *conn, paciente p[], int tot);
+void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado);
+void listarPacientes(paciente p[], int tot);
+void ordenarPacientesPorNome(paciente p[], int tot, int *ordenado); // Bubble Sort
+void ordenarPacientesPorIdade(paciente p[], int tot, int *ordenado); // Bubble Sort
+void buscarPacienteNomeBinaria(paciente p[], int tot, int ordenado); // Busca Binária
+
+// MEDICOS
+void cadastrarMedico(MYSQL *conn, medico m[], int *tot);
+void listarMedicos(medico m[], int tot);
+void buscarMedicoNomeLinear(medico m[], int tot); // Busca Linear
+
+// CONSULTAS
+void agendarConsulta(MYSQL *conn, consulta c[], int *tot);
+void cancelarConsulta(MYSQL *conn, consulta c[], int *tot);
+void listarConsultasPorPaciente(consulta c[], int tot);
+void listarConsultasPorMedico(consulta c[], int tot);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+ //MAIN
+
+int main() 
+{
+    MYSQL *conn = conectarMySQL();
+    if (conn == NULL) 
+    {
+        printf("[ERRO CRITICO] Nao foi possivel conectar ao MySQL. Encerrando...\n");
+        return 1;
+    }
+
+    // CRIAR AS LISTAS DE PACIENTES, MEDICOS E CONSULTAS
+    paciente listaP[MAX_REGISTROS]; 
+    medico listaM[MAX_REGISTROS];   
+    consulta listaC[MAX_REGISTROS]; 
+
+    // CONTADORES ZERADOS
+    int totP = 0;
+    int ordP = 0;
+    int totM = 0;
+    int totC = 0;
+
+    // CARREGA OS DADOS DO BANCO MYSQL NAS LISTAS
+    carregarDadosDoMySQL(conn, listaP, &totP, listaM, &totM, listaC, &totC);
+
+    int op = -1;
+    
     do {
-        printf("\n=== SISTEMA DE CLINICA MEDICA ===\n");
-        printf("1 - Cadastrar Paciente\n");
-        printf("2 - Listar Pacientes\n");
-        printf("3 - Ordenar por Nome (Bubble Sort)\n");
-        printf("4 - Buscar por CPF (Busca Linear)\n");
-        printf("5 - Buscar por Nome (Busca Binaria)\n");
-        printf("0 - Sair\n");
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
+        printf("          SISTEMA DE CLINICA MEDICA            \n");
+        printf("\n");
+        printf("Selecione uma opção\n");
+        printf("\n");
+        printf(" 1 - Cadastrar Paciente\n");
+        printf(" 2 - Alterar Paciente\n");
+        printf(" 3 - Excluir Paciente\n");
+        printf(" 4 - Listar Pacientes\n");
+        printf(" 5 - Ordenar Pacientes/Nome (Bubble Sort)\n");
+        printf(" 6 - Ordenar Pacientes/Idade (Bubble Sort)\n");
+        printf(" 7 - Buscar Paciente (Busca Binaria)\n");
+        printf(" 8 - Cadastrar Medico\n");
+        printf(" 9 - Listar Medicos\n");
+        printf(" 10 - Buscar Medico (Busca Linear)\n");
+        printf(" 11 - Agendar Consulta\n");
+        printf(" 12 - Cancelar Consulta\n");
+        printf(" 13 - Consultas por Paciente\n");
+        printf(" 14 - Consultas por Medico\n");
+        printf(" 0 - SAIR\n");
+        printf("\n");
+        printf("Opcao: "); 
+        scanf("%d", &op);
 
-        switch (opcao) {
-            case 1:
-                cadastrarPaciente(listaPacientes, &totalPacientes);
-                estaOrdenado = 0; // Novos cadastros desordenam a lista
-                break;
-            case 2:
-                listarPacientes(listaPacientes, totalPacientes);
-                break;
-            case 3:
-                ordenarPorNome(listaPacientes, totalPacientes);
-                estaOrdenado = 1; // Sinaliza que o vetor está ordenado
-                listarPacientes(listaPacientes, totalPacientes);
-                break;
-            case 4:
-                buscarPorCPF_Linear(listaPacientes, totalPacientes);
-                break;
-            case 5:
-                buscarPorNome_Binaria(listaPacientes, totalPacientes, estaOrdenado);
-                break;
+        switch (op) {
+            case 1: cadastrarPaciente(conn, listaP, &totP, &ordP); break;
+            case 2: alterarPaciente(conn, listaP, totP); break;
+            case 3: excluirPaciente(conn, listaP, &totP, &ordP); break;
+            case 4: listarPacientes(listaP, totP); break;
+            case 5: ordenarPacientesPorNome(listaP, totP, &ordP); break;
+            case 6: ordenarPacientesPorIdade(listaP, totP, &ordP); break;
+            case 7: buscarPacienteNomeBinaria(listaP, totP, ordP); break;
+            case 8: cadastrarMedico(conn, listaM, &totM); break;
+            case 9: listarMedicos(listaM, totM); break;
+            case 10: buscarMedicoNomeLinear(listaM, totM); break;
+            case 11: agendarConsulta(conn, listaC, &totC); break;
+            case 12: cancelarConsulta(conn, listaC, &totC); break;
+            case 13: listarConsultasPorPaciente(listaC, totC); break;
+            case 14: listarConsultasPorMedico(listaC, totC); break;
             case 0:
-                printf("\nSaindo do sistema... Ate logo!\n");
+                mysql_close(conn);
+                printf("\nConexao MySQL encerrada. Programa finalizado!\n");
                 break;
-            default:
-                printf("\nOpcao invalida! Tente novamente.\n");
-                break;
+            
+            default: 
+                printf("[ERRO] Opcao invalida. Tente novamente.\n");
         }
-
-    } while (opcao != 0);
+    } while (op != 0);
 
     return 0;
 }
 
-// 4. IMPLEMENTAÇÃO DAS FUNÇÕES
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void cadastrarPaciente(paciente lista[], int *total) {
-    if (*total >= MAX_PACIENTES) {
-        printf("\n[ERRO] Limite de memoria atingido!\n");
-        return;
-    }
-
-    printf("\n--- CADASTRO DE PACIENTE ---\n");
-    printf("Digite o ID: ");
-    scanf("%d", &lista[*total].id);
-    getchar();
-
-    printf("Digite o Nome: ");
-    scanf("%s", lista[*total].nome);
-
-    printf("Digite o Sobrenome: ");
-    scanf("%s", lista[*total].sobrenome);
-
-    printf("Informe o CPF: ");
-    scanf("%s", lista[*total].cpf);
-
-    printf("Informe o Telefone: ");
-    scanf("%s", lista[*total].telefone);
-
-    (*total)++;
-    printf("\n[SUCESSO] Paciente cadastrado com sucesso!\n");
-}
-
-void listarPacientes(paciente lista[], int total) {
-    printf("\n--- LISTA DE PACIENTES (%d) ---\n", total);
-    if (total == 0) {
-        printf("[Nenhum paciente cadastrado na memoria]\n");
-        return;
-    }
-
-    printf("ID | NOME COMPLETO | CPF | TELEFONE\n");
-    printf("--------------------------------------------------\n");
-    for (int i = 0; i < total; i++) {
-        printf("%d | %s %s | %s | %s\n",
-               lista[i].id, lista[i].nome, lista[i].sobrenome, lista[i].cpf, lista[i].telefone);
-    }
-}
-
-// ALGORITMO DE ORDENAÇÃO: Bubble Sort (Obrigatorio no PDF)
-void ordenarPorNome(paciente lista[], int total) {
-    if (total < 2) {
-        printf("\n[INFO] Poucos pacientes para ordenar.\n");
-        return;
-    }
-
-    paciente temp;
-    for (int i = 0; i < total - 1; i++) {
-        for (int j = 0; j < total - i - 1; j++) {
-            if (strcmp(lista[j].nome, lista[j + 1].nome) > 0) {
-                temp = lista[j];
-                lista[j] = lista[j + 1];
-                lista[j + 1] = temp;
-            }
+// 2. FUNÇÃO PRÓPRIA DE COMPARAÇÃO DE TEXTO (Sem <string.h>)
+int compararTextos(char t1[], char t2[]) {
+    int i = 0;
+    while (t1[i] != '\0' && t2[i] != '\0') {
+        if (t1[i] != t2[i]) {
+            return t1[i] - t2[i];
         }
+        i++;
     }
-    printf("\n[SUCESSO] Lista ordenada por nome via Bubble Sort!\n");
+    return t1[i] - t2[i];
 }
 
-// ALGORITMO DE BUSCA 1: Busca Linear (Percorre posicao por posicao)
-void buscarPorCPF_Linear(paciente lista[], int total) {
-    if (total == 0) {
-        printf("\n[INFO] Nenhum paciente cadastrado.\n");
-        return;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// CONEXÇÃO AO BANCO DE DADOS + CARREGAR OS DADOS JA EXISTENTES NO BANCO
+
+// CONECTAR BANCO MYSQL
+MYSQL* conectarMySQL() {
+    MYSQL *conn = mysql_init(NULL);
+    if (conn == NULL) {
+        printf("[ERRO MYSQL] Falha ao inicializar o driver.\n");
+        return NULL;
     }
 
-    char cpfBusca[15];
-    printf("\n--- BUSCA LINEAR POR CPF ---\n");
-    printf("Digite o CPF procurado: ");
-    scanf("%s", cpfBusca);
-
-    for (int i = 0; i < total; i++) {
-        if (strcmp(lista[i].cpf, cpfBusca) == 0) {
-            printf("\n[ENCONTRADO] Paciente localizado na posicao %d:\n", i);
-            printf("ID: %d | Nome: %s %s | CPF: %s | Tel: %s\n",
-                   lista[i].id, lista[i].nome, lista[i].sobrenome, lista[i].cpf, lista[i].telefone);
-            return; // Encontrou e encerra a funcao
-        }
+    // Ajuste "localhost", "root" e "senha" para as credenciais do seu servidor MySQL
+    if (mysql_real_connect(conn, "localhost", "root", "senha", "clinica_medica", 3306, NULL, 0) == NULL) {
+        printf("[ERRO MYSQL] Conexao falhou: %s\n", mysql_error(conn));
+        mysql_close(conn);
+        return NULL;
     }
-
-    printf("\n[NAO ENCONTRADO] Nenhum paciente possui o CPF %s.\n", cpfBusca);
+    return conn;
 }
 
-// ALGORITMO DE BUSCA 2: Busca Binaria (Divide a lista ao meio repetidamente)
-void buscarPorNome_Binaria(paciente lista[], int total, int estaOrdenado) {
-    if (total == 0) {
-        printf("\n[INFO] Nenhum paciente cadastrado.\n");
-        return;
-    }
 
-    // A busca binaria EXIGE que os dados estejam ordenados (Requisito do PDF)
-    if (!estaOrdenado) {
-        printf("\n[ATENCAO] A Busca Binaria exige que a lista esteja ordenada primeiro!\n");
-        printf("Por favor, execute a opcao 3 (Ordenar) antes de buscar.\n");
-        return;
-    }
 
-    char nomeBusca[50];
-    printf("\n--- BUSCA BINARIA POR NOME ---\n");
-    printf("Digite o Primeiro Nome procurado: ");
-    scanf("%s", nomeBusca);
+// CARREGAR OS DADOS DO BANCO DE DADOS
+void carregarDadosDoMySQL(MYSQL *conn, paciente p[], int *totP, medico m[], int *totM, consulta c[], int *totC) {
+    MYSQL_RES *res;
+    MYSQL_ROW linha;
 
-    int inicio = 0;
-    int fim = total - 1;
-    int meio;
-
-    while (inicio <= fim) {
-        meio = (inicio + fim) / 2;
-
-        int comparacao = strcmp(lista[meio].nome, nomeBusca);
-
-        if (comparacao == 0) {
-            printf("\n[ENCONTRADO via Busca Binaria] Posicao %d:\n", meio);
-            printf("ID: %d | Nome: %s %s | CPF: %s | Tel: %s\n",
-                   lista[meio].id, lista[meio].nome, lista[meio].sobrenome, lista[meio].cpf, lista[meio].telefone);
-            return;
+    // CARREGAR OS PACIENTES E GUARDA EM (p)  --  (TIVE Q PESQUISAR POR IA COMO FAZER)
+    *totP = 0;
+    if (mysql_query(conn, "SELECT id, nome, idade, cpf, telefone FROM paciente") == 0) {
+        res = mysql_store_result(conn);
+        while ((linha = mysql_fetch_row(res)) && *totP < MAX_REGISTROS) {
+            sscanf(linha[0], "%d", &p[*totP].id);
+            sprintf(p[*totP].nome, "%s", linha[1]);
+            sscanf(linha[2], "%d", &p[*totP].idade);
+            sprintf(p[*totP].cpf, "%s", linha[3]);
+            sprintf(p[*totP].telefone, "%s", linha[4]);
+            (*totP)++;
         }
-
-        if (comparacao < 0) {
-            inicio = meio + 1; // Busca na metade da direita
-        } else {
-            fim = meio - 1;    // Busca na metade da esquerda
-        }
+        mysql_free_result(res);
     }
 
-    printf("\n[NAO ENCONTRADO] O paciente %s nao esta cadastrado.\n", nomeBusca);
+    // CARREGAR OS MEDICOS  E GUARDA EM (m)
+    *totM = 0;
+    if (mysql_query(conn, "SELECT id, nome, crm, especialidade FROM medico") == 0) {
+        res = mysql_store_result(conn);
+        while ((linha = mysql_fetch_row(res)) && *totM < MAX_REGISTROS) {
+            sscanf(linha[0], "%d", &m[*totM].id);
+            sprintf(m[*totM].nome, "%s", linha[1]);
+            sprintf(m[*totM].crm, "%s", linha[2]);
+            sprintf(m[*totM].especialidade, "%s", linha[3]);
+            (*totM)++;
+        }
+        mysql_free_result(res);
+    }
+
+    // CARREGAR AS CONSULTAS E GUARDA EM (c)
+    *totC = 0;
+    if (mysql_query(conn, "SELECT id, id_paciente, id_medico, data, hora FROM consulta") == 0) {
+        res = mysql_store_result(conn);
+        while ((linha = mysql_fetch_row(res)) && *totC < MAX_REGISTROS) {
+            sscanf(linha[0], "%d", &c[*totC].id);
+            sscanf(linha[1], "%d", &c[*totC].idPaciente);
+            sscanf(linha[2], "%d", &c[*totC].idMedico);
+            sprintf(c[*totC].data, "%s", linha[3]);
+            sprintf(c[*totC].hora, "%s", linha[4]);
+            (*totC)++;
+        }
+        mysql_free_result(res);
+    }
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// FUNCOES DO MENU
+
+// 1 - CADASTRAR PACIENTES
+
+void cadastrarPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
+{
+    if (*tot >= MAX_REGISTROS) 
+    {
+        printf("\nO BANCO DE DADOS ATINGIU A QUANTIDADE MÁXIMA DE REGISTROS\n");
+        return;
+    }
+    paciente novo;
+    printf("\nCADASTRAR UM NOVO PACIENTE \n");
+    
+    printf("INFORME O ID: "); 
+    scanf("%d", &novo.id);
+    
+    printf("Nome Completo: "); 
+    scanf(" %[^\n]", novo.nome);
+    
+    printf("Idade: "); 
+    scanf("%d", &novo.idade);
+    
+    printf("CPF: "); 
+    scanf("%s", novo.cpf);
+    
+    printf("Telefone: "); 
+    scanf("%s", novo.telefone);
+
+    
+    //MONTA O COMANDO EM SQL PARA SER ENVIADO AO MYSQL
+    char query[300];
+    sprintf(query, "INSERT INTO paciente VALUES (%d, '%s', %d, '%s', '%s');", novo.id, novo.nome, novo.idade, novo.cpf, novo.telefone); 
+    
+    // ENVIA O COMANDO EM SQL PARA O MYSQL, O MYSQL RETORN COM VALOR 0 SE DER CERTO
+    if (mysql_query(conn, query) == 0) 
+    {
+        p[*tot] = novo;
+        (*tot)++;
+        *ordenado = 0; // Novo item desordena a lista por nome
+        printf("[SUCESSO] Paciente cadastrado no banco e na RAM!\n");
+    } 
+    else 
+    {
+        printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+    }
+}
+
+
