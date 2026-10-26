@@ -354,46 +354,60 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
     }
 
     int idapagarpaciente;
+    printf("Digite o ID do paciente a excluir: ");
     scanf("%d", &idapagarpaciente);
     
 
-    for(int i = 0; i < *tot; i++)
+    for(int i = 0; i < *tot -1; i++)
     {
         if (p[i].id == idapagarpaciente) 
         {
             int op;
             printf("Esta prestes a apagar os dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não", p[i].nome);
             scanf("%d", &op);
-            if (op != 1 || op != 2)
+            if (op != 1)
             {
-                break;
+                printf("OPERAÇÃO CANCELADA!\N")
+                return;
             }
-            if (op == 2)
+        
+
+            char query[300];
+            sprintf(query, "DELETE FROM paciente WHERE id=%d;", idapagarpaciente);
+        
+            if (mysql_query(conn, query) == 0) 
             {
-                break;
-            }            
+                // Remove o item da RAM reordenando o vetor para nao deixar espacos vagos
+                for (int j = i; j < *tot - 1; j++)
+                {
+                    p[j] = p[j + 1];
+                }
+        
+                (*tot)--;      // Diminui o total de pacientes na RAM
+                *ordenado = 0; // Desmarca a flag de ordenacao
+            }
+            else
+            {
+                printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+            }
+        }  
+
+        else
+        {
+            printf("Paciente não encontrado!\n");
         }
 
-    char query[300];
-    sprintf(query, "DELETE FROM paciente WHERE id=%d;", idapagarpaciente);
-
-    
-    if (mysql_query(conn, query) == 0) 
-    {
-       p[i] = temp;
-       printf("Dados Pagados!\n");
-    } 
-    else 
-    {
-        printf("[ERRO MYSQL] %s\n", mysql_error(conn));
-    }
-    
+        return;
 }
 
 
+// FUNÇÃO 4 - LISTAR PACIENTES
+
+void listarPacientes(paciente p[], int tot)
+{
 
 
-
+}
 
 
 
