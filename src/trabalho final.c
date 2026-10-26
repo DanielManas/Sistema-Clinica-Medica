@@ -145,7 +145,10 @@ int main()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// 2. FUNÇÃO PRÓPRIA DE COMPARAÇÃO DE TEXTO (Sem <string.h>)
+// 2. FUNÇÃO PRÓPRIA DE COMPARAÇÃO DE TEXTO (Sem <string.h>)  
+// ESSA FUNÇÃO VAI SER USADA EM FUNÇÕES DE ORDENAÇÃO DE NOME COMO NA FUNÇÃO 5 E 6
+
+
 int compararTextos(char t1[], char t2[]) {
     int i = 0;
     while (t1[i] != '\0' && t2[i] != '\0') {
@@ -177,8 +180,6 @@ MYSQL* conectarMySQL() {
     }
     return conn;
 }
-
-
 
 // CARREGAR OS DADOS DO BANCO DE DADOS
 void carregarDadosDoMySQL(MYSQL *conn, paciente p[], int *totP, medico m[], int *totM, consulta c[], int *totC) {
@@ -285,24 +286,24 @@ void cadastrarPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
 // FUNÇÃO 2 - ALTERAR DADOS DO PACIENTE
 void alterarPaciente(MYSQL *conn, paciente p[], int tot)
 {
-    if (*tot == 0)
+    if (tot == 0)
     {
         printf("Não tem nenhum paciente no banco de dados\n");
     }
 
     int idalterarpaciente;
 
-    printf("Informe qual é o ID do paciente que deseja alterar: ")
+    printf("Informe qual é o ID do paciente que deseja alterar: ");
     scanf("%d", &idalterarpaciente);
 
-    for (int i = 0; i < *tot; i++) 
+    for (int i = 0; i < tot; i++) 
     {
         if (p[i].id == idalterarpaciente) 
         {
             int op;
             printf("Esta prestes a alterar dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não", p[i].nome);
             scanf("%d", &op);
-            if (op != 1 || op != 2)
+            if (op != 1 && op != 2)
             {
                 break;
             }
@@ -367,7 +368,7 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
             scanf("%d", &op);
             if (op != 1)
             {
-                printf("OPERAÇÃO CANCELADA!\N")
+                printf("OPERAÇÃO CANCELADA!\n")
                 return;
             }
         
@@ -397,7 +398,8 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
             printf("Paciente não encontrado!\n");
         }
 
-        return;
+    }
+    return;
 }
 
 
@@ -420,9 +422,131 @@ void listarPacientes(paciente p[], int tot)
 }
 
 
+// FUNÇÃO 5 - ORDENAR PACIENTES POR NOME (BOBBLE SORT)
+void ordenarPacientesPorNome(paciente p[], int tot, int *ordenado)
+{
+    if (tot < 2) 
+    {
+        if (tot == 0) 
+            printf("Nenhum paciente cadastrado.\n");
+        else 
+            printf("Apenas um paciente cadastrado. Lista ja ordenada.\n");
+            
+        *ordenado = 1;
+        return;
+    }
+
+    // Algoritmo Bubble Sort
+    for (int i = 0; i < tot - 1; i++) 
+    {
+        for (int j = 0; j < tot - 1 - i; j++) 
+        {
+            // Usa a sua função compararTextos na LINHA 152
+            if (compararTextos(p[j].nome, p[j + 1].nome) > 0) 
+            {
+                // Troca as structs inteiras
+                paciente temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+    
+    *ordenado = 1; //MOSTRA QUE A LISTA ESTA ORDENADA
+    printf("A lista agora esta ordenada por Nome!");
+}
+
+
+// FUNÇÃO 6 - ORDENAR OS PACIENTES POR IDADE (BOBBLE SORT)
+void ordenarPacientesPorIdade(paciente p[], int tot, int *ordenado)
+{
+    
+
+    if (tot < 2) 
+    {
+        if (tot == 0) 
+            printf("Nenhum paciente cadastrado.\n");
+        else 
+            printf("Apenas um paciente cadastrado. Lista ja ordenada.\n");
+            
+        *ordenado = 1;
+        return;
+    }
+
+    for (int i = 0; i < tot - 1; i++) 
+    {
+        for (int j = 0; j < tot - 1 - i; j++) 
+        { 
+            if (p[j].idade > p[j + 1].idade) 
+            {   
+                paciente temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+
+    *ordenado = 0; //SEI QUE É CONTRADITORIO, MAS O ORDENADO SERVE PARA APENAS OS NOMES, SE NÃO A FUNÇÃO 7 NÃO RODA
+    printf("A lista agora esta ordenada por idade!");
+}
 
 
 
+// FUNÇÃO 7 - BUSCAR PACIENTE POR NOME (BUSCA BINARIA)
+void buscarPacienteNomeBinaria(paciente p[], int tot, int ordenado)
+{
+    if (tot == 0) 
+    {
+        printf("Nenhum paciente cadastrado.\n");
+        return;
+    }
+
+    if (ordenado != 1)
+    {
+        printf("A lista não esta ordenada por Nome. Para executar esta função, execute a função 5 primeiro!");
+        return;
+    }
+
+    char nomeBusca[100];
+    printf("\nInforme o nome exato do paciente que esta buscando: ");
+    scanf(" %[^\n]", nomeBusca);
+
+    
+    int inicio = 0;
+    int fim = tot - 1;
+    int encontrado = 0;
+
+    while(inicio <= fim)
+    {
+        
+        int meio = (inicio + fim) / 2;
+        int res = compararTextos(p[meio].nome, nomeBusca);
+
+        if (res == 0) // PESSOA ENCONTRADA
+        {
+            printf("  ID    |   NOME    |    IDADE    |    CPF    |    TELEFONE\n\n ");
+            printf("  %d         %s         %d         %s         %s\n", p[meio].id, p[meio].nome, p[meio].idade, p[meio].cpf, p[meio].telefone);
+            encontrado = 1;
+            return;
+        }
+
+        else if (res < 0) // ACIMA DO MEIO
+        {
+            inicio = meio + 1;
+        }
+
+        else     // ABAIXO DO MEIO
+        {
+            fim = meio - 1;
+        }
+        
+    }
+
+    if (encontrado != 1)
+    {
+        printf("Não foi possivel encontrar o paciente, verifique se digitou corretamente!");
+    }
+    
+    return;
+}
 
 
 
