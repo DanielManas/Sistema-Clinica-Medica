@@ -402,12 +402,24 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
 
 
 // FUNÇÃO 4 - LISTAR PACIENTES
-
 void listarPacientes(paciente p[], int tot)
 {
-
-
+    if (tot == 0) 
+    {
+        printf("Nenhum paciente cadastrado.\n");
+        return;
+    }
+    
+    printf("  ID    |   NOME    |    IDADE    |    CPF    |    TELEFONE\n\n ");
+    for(int i = 0; i<tot; i++)
+        {
+            printf("  %d         %s         %d         %s         %s\n", p[i].id, p[i].nome, p[i].idade, p[i].cpf, p[i].telefone);
+            
+        }
+        return;
 }
+
+
 
 
 
