@@ -136,7 +136,7 @@ int main()
                 break;
             
             default: 
-                printf("[ERRO] Opcao invalida. Tente novamente.\n");
+                printf("Opcao invalida.\n");
         }
     } while (op != 0);
 
@@ -280,5 +280,126 @@ void cadastrarPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
         printf("[ERRO MYSQL] %s\n", mysql_error(conn));
     }
 }
+
+
+// FUNÇÃO 2 - ALTERAR DADOS DO PACIENTE
+void alterarPaciente(MYSQL *conn, paciente p[], int tot)
+{
+    if (*tot == 0)
+    {
+        printf("Não tem nenhum paciente no banco de dados\n");
+    }
+
+    int idalterarpaciente;
+
+    printf("Informe qual é o ID do paciente que deseja alterar: ")
+    scanf("%d", &idalterarpaciente);
+
+    for (int i = 0; i < *tot; i++) 
+    {
+        if (p[i].id == idalterarpaciente) 
+        {
+            int op;
+            printf("Esta prestes a alterar dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não", p[i].nome);
+            scanf("%d", &op);
+            if (op != 1 || op != 2)
+            {
+                break;
+            }
+            if (op == 2)
+            {
+                break;
+            }
+
+            paciente temp;
+            temp.id = idalterarpaciente;
+            printf("Novo Nome Completo: ");
+            scanf(" %[^\n]", temp.nome);
+
+            printf("Nova Idade: ");
+            scanf("%d", &temp.idade);
+
+            printf("Novo CPF: ");
+            scanf("%s", temp.cpf);
+
+            printf("Novo Telefone: ");
+            scanf("%s", temp.telefone);
+
+            //MONTAR O COMANDO PARA ALTERAR EM SQL
+            char query[300];
+            sprintf(query, "UPDATE paciente SET nome='%s', idade=%d, cpf='%s', telefone='%s' WHERE id=%d;",
+                    temp.nome, temp.idade, temp.cpf, temp.telefone, idalterarpaciente);
+
+            // ENVIA O COMANDO PARA MYSQL
+            if (mysql_query(conn, query) == 0) 
+            {
+                p[i] = temp;
+                printf("Dados Atualizados!\n");
+            } 
+            else 
+            {
+                printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+            }
+            return; 
+        }  
+}
+
+// FUNÇÃO 3 - EXCLUIR PACIENTE
+void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
+{
+    if(*tot == 0)
+    {
+        printf("Não tem nenhum paiente no banco de dados! Não tem quem ser excluido");
+        return;
+    }
+
+    int idapagarpaciente;
+    scanf("%d", &idapagarpaciente);
+    
+
+    for(int i = 0; i < *tot; i++)
+    {
+        if (p[i].id == idapagarpaciente) 
+        {
+            int op;
+            printf("Esta prestes a apagar os dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não", p[i].nome);
+            scanf("%d", &op);
+            if (op != 1 || op != 2)
+            {
+                break;
+            }
+            if (op == 2)
+            {
+                break;
+            }            
+        }
+
+    char query[300];
+    sprintf(query, "DELETE FROM paciente WHERE id=%d;", idapagarpaciente);
+
+    
+    if (mysql_query(conn, query) == 0) 
+    {
+       p[i] = temp;
+       printf("Dados Pagados!\n");
+    } 
+    else 
+    {
+        printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
