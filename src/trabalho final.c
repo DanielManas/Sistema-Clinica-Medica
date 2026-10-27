@@ -550,6 +550,68 @@ void buscarPacienteNomeBinaria(paciente p[], int tot, int ordenado)
 }
 
 
+// FUNÇÃO 8 - CADASTRAR MEDICOS
+void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
+{
+    if (*tot >= MAX_REGISTROS) 
+        {
+            printf("\nO BANCO DE DADOS ATINGIU A QUANTIDADE MÁXIMA DE REGISTROS\n");
+            return;
+        }
+    
+        medico novo;
+        printf("\nCADASTRAR UM NOVO MEDICO \n");
+        
+        printf("INFORME O ID: "); 
+        scanf("%d", &novo.id);
+        
+        printf("Nome Completo: "); 
+        scanf(" %[^\n]", novo.nome);
+        
+        printf("CRM: "); 
+        scanf("%d", &novo.crm);
+        
+        printf("Especialidade: "); 
+        scanf("%s", novo.especialidade);
+    
+        
+        //MONTA O COMANDO EM SQL PARA SER ENVIADO AO MYSQL
+        char query[300];
+        sprintf(query, "INSERT INTO medico VALUES (%d, '%s', %d, '%s', '%s');", novo.id, novo.nome, novo.idade, novo.cpf, novo.telefone); 
+        
+        // ENVIA O COMANDO EM SQL PARA O MYSQL, O MYSQL RETORN COM VALOR 0 SE DER CERTO
+        if (mysql_query(conn, query) == 0) 
+        {
+            p[*tot] = novo;
+            (*tot)++;
+            *ordenado = 0; // Novo item desordena a lista por nome
+            printf("[SUCESSO] Medico cadastrado no banco e na RAM!\n");
+        } 
+        else 
+        {
+            printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+        }
+}
+
+
+// FUNÇÃO 9 - LISTAR MEDICOS
+void listarMedicos(medico m[], int tot)
+{
+    if (tot == 0) 
+        {
+            printf("Nenhum medico cadastrado.\n");
+            return;
+        }
+        
+        printf("  ID    |   NOME    |    CMR    |    ESPECIALIDADE\n\n ");
+        for(int i = 0; i<tot; i++)
+            {
+                printf("  %d         %s         %s         %s         %s\n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
+                
+            }
+    return;    
+}
+
 
 
 
