@@ -359,7 +359,7 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
     scanf("%d", &idapagarpaciente);
     
 
-    for(int i = 0; i < *tot -1; i++)
+    for(int i = 0; i < *tot; i++)
     {
         if (p[i].id == idapagarpaciente) 
         {
@@ -368,7 +368,7 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
             scanf("%d", &op);
             if (op != 1)
             {
-                printf("OPERAÇÃO CANCELADA!\n")
+                printf("OPERAÇÃO CANCELADA!\n");
                 return;
             }
         
@@ -391,15 +391,14 @@ void excluirPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
             {
                 printf("[ERRO MYSQL] %s\n", mysql_error(conn));
             }
+
+            return;
         }  
 
-        else
-        {
-            printf("Paciente não encontrado!\n");
-        }
-
     }
-    return;
+    
+ printf("Paciente não encontrado!\n");
+    
 }
 
 
@@ -450,6 +449,7 @@ void ordenarPacientesPorNome(paciente p[], int tot, int *ordenado)
                 p[j + 1] = temp;
             }
         }
+    }
     
     *ordenado = 1; //MOSTRA QUE A LISTA ESTA ORDENADA
     printf("A lista agora esta ordenada por Nome!");
@@ -483,6 +483,7 @@ void ordenarPacientesPorIdade(paciente p[], int tot, int *ordenado)
                 p[j + 1] = temp;
             }
         }
+    }
 
     *ordenado = 0; //SEI QUE É CONTRADITORIO, MAS O ORDENADO SERVE PARA APENAS OS NOMES, SE NÃO A FUNÇÃO 7 NÃO RODA
     printf("A lista agora esta ordenada por idade!");
