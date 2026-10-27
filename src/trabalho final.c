@@ -4,6 +4,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+//      TEM ALGUNS DADOS QUE TALVEZ VALE A PENA ALTERAR, TIPO O TELEFONE É UM INT, assim como o CRM
+
+
+
+
 // ESTRUTURA DADOS DOS PACIENTES 
 typedef struct 
 {
@@ -577,7 +584,7 @@ void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
         
         //MONTA O COMANDO EM SQL PARA SER ENVIADO AO MYSQL
         char query[300];
-        sprintf(query, "INSERT INTO medico VALUES (%d, '%s', %d, '%s', '%s');", novo.id, novo.nome, novo.idade, novo.cpf, novo.telefone); 
+        sprintf(query, "INSERT INTO medico VALUES (%d, '%s', '%s', '%s');", novo.id, novo.nome, novo.crm, novo.especialidade); 
         
         // ENVIA O COMANDO EM SQL PARA O MYSQL, O MYSQL RETORN COM VALOR 0 SE DER CERTO
         if (mysql_query(conn, query) == 0) 
@@ -606,12 +613,55 @@ void listarMedicos(medico m[], int tot)
         printf("  ID    |   NOME    |    CMR    |    ESPECIALIDADE\n\n ");
         for(int i = 0; i<tot; i++)
             {
-                printf("  %d         %s         %s         %s         %s\n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
+                printf("  %d         %s         %s         %s         \n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
                 
             }
     return;    
 }
 
+
+// FUNÇÃO 10 - BUSCAR MEDICO (BUSCA LINEAR)
+void buscarMedicoNomeLinear(medico m[], int tot);
+{
+    if(tot == 0)
+    {
+        printf("Nenhum medico cadastrado\n");
+        return;
+    }
+    
+    char nomeBusca[100];
+    printf("\nInforme o nome exato do medico que esta buscando: ");
+    scanf(" %[^\n]", nomeBusca);
+
+    encontrado = 0;
+    for(int i = 0, i < tot, i++)
+    {
+        int res = compararTextos(p[i].nome, nomeBusca);
+
+        if (res == 0) // PESSOA ENCONTRADA
+        {
+            printf("  ID    |   NOME    |    CRM    |    ESPECIALIDADE\n\n ");
+            printf("  %d         %s         %S         %s         \n", p[meio].id, p[meio].nome, p[meio].idade, p[meio].cpf, p[meio].telefone);
+            encontrado = 1;
+            return;
+        }
+    }
+    
+    if (encontrado == 0)
+    {
+        printf("Não foi possível encontrar o médico, verifique se digitou corretamente!");
+    }
+    return;
+}
+
+
+// FUNÇÃO 11 - AGENDAR CONSULTA
+void agendarConsulta(MYSQL *conn, consulta c[], int *tot)
+{
+    
+
+    
+}
 
 
 
