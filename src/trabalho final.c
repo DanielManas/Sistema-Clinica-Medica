@@ -6,12 +6,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-//      TEM ALGUNS DADOS QUE TALVEZ VALE A PENA ALTERAR, TIPO O TELEFONE É UM INT, assim como o CRM
-
-
-
-
 // ESTRUTURA DADOS DOS PACIENTES 
 typedef struct 
 {
