@@ -181,7 +181,7 @@ MYSQL* conectarMySQL() {
     }
 
     // Ajuste "localhost", "root" e "senha" para as credenciais do seu servidor MySQL
-    if (mysql_real_connect(conn, "localhost", "root", "senha", "clinica_medica", 3306, NULL, 0) == NULL) {
+    if (mysql_real_connect(conn, "localhost", "root", "123456", "clinica_medica", 3306, NULL, 0) == NULL) {
         printf("[ERRO MYSQL] Conexao falhou: %s\n", mysql_error(conn));
         mysql_close(conn);
         return NULL;
