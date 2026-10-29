@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <mysql/mysql.h> 
 #define MAX_REGISTROS 100
+#define MAX_CONSULTAS 5000
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +64,7 @@ void listarMedicos(medico m[], int tot);
 void buscarMedicoNomeLinear(medico m[], int tot); // Busca Linear
 
 // CONSULTAS
-void agendarConsulta(MYSQL *conn, consulta c[], int *tot);
+void agendarConsulta(MYSQL *conn, paciente p[], int totP, medico m[], int totM, consulta c[], int *totC);
 void cancelarConsulta(MYSQL *conn, consulta c[], int *tot);
 void listarConsultasPorPaciente(consulta c[], int tot);
 void listarConsultasPorMedico(consulta c[], int tot);
@@ -85,7 +86,7 @@ int main()
     // CRIAR AS LISTAS DE PACIENTES, MEDICOS E CONSULTAS
     paciente listaP[MAX_REGISTROS]; 
     medico listaM[MAX_REGISTROS];   
-    consulta listaC[MAX_REGISTROS]; 
+    consulta listaC[MAX_CONSULTAS]; 
 
     // CONTADORES ZERADOS
     int totP = 0;
@@ -133,7 +134,7 @@ int main()
             case 8: cadastrarMedico(conn, listaM, &totM); break;
             case 9: listarMedicos(listaM, totM); break;
             case 10: buscarMedicoNomeLinear(listaM, totM); break;
-            case 11: agendarConsulta(conn, listaC, &totC); break;
+            case 11: agendarConsulta(conn, listaP, totP, listaM, totM, listaC, &totC); break;
             case 12: cancelarConsulta(conn, listaC, &totC); break;
             case 13: listarConsultasPorPaciente(listaC, totC); break;
             case 14: listarConsultasPorMedico(listaC, totC); break;
@@ -226,7 +227,7 @@ void carregarDadosDoMySQL(MYSQL *conn, paciente p[], int *totP, medico m[], int 
     *totC = 0;
     if (mysql_query(conn, "SELECT id, id_paciente, id_medico, data, hora FROM consulta") == 0) {
         res = mysql_store_result(conn);
-        while ((linha = mysql_fetch_row(res)) && *totC < MAX_REGISTROS) {
+        while ((linha = mysql_fetch_row(res)) && *totC < MAX_CONSULTAS) {
             sscanf(linha[0], "%d", &c[*totC].id);
             sscanf(linha[1], "%d", &c[*totC].idPaciente);
             sscanf(linha[2], "%d", &c[*totC].idMedico);
@@ -243,8 +244,8 @@ void carregarDadosDoMySQL(MYSQL *conn, paciente p[], int *totP, medico m[], int 
 
 // FUNCOES DO MENU
 
-// 1 - CADASTRAR PACIENTES
 
+// FUNÇÃO 1 - CADASTRAR PACIENTES
 void cadastrarPaciente(MYSQL *conn, paciente p[], int *tot, int *ordenado)
 {
     if (*tot >= MAX_REGISTROS) 
@@ -576,7 +577,7 @@ void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
         scanf(" %[^\n]", novo.nome);
         
         printf("CRM: "); 
-        scanf("%d", &novo.crm);
+        scanf("%s", &novo.crm);
         
         printf("Especialidade: "); 
         scanf("%s", novo.especialidade);
@@ -589,7 +590,7 @@ void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
         // ENVIA O COMANDO EM SQL PARA O MYSQL, O MYSQL RETORN COM VALOR 0 SE DER CERTO
         if (mysql_query(conn, query) == 0) 
         {
-            p[*tot] = novo;
+            m[*tot] = novo;
             (*tot)++;
             *ordenado = 0; // Novo item desordena a lista por nome
             printf("[SUCESSO] Medico cadastrado no banco e na RAM!\n");
@@ -621,7 +622,7 @@ void listarMedicos(medico m[], int tot)
 
 
 // FUNÇÃO 10 - BUSCAR MEDICO (BUSCA LINEAR)
-void buscarMedicoNomeLinear(medico m[], int tot);
+void buscarMedicoNomeLinear(medico m[], int tot)
 {
     if(tot == 0)
     {
@@ -633,15 +634,15 @@ void buscarMedicoNomeLinear(medico m[], int tot);
     printf("\nInforme o nome exato do medico que esta buscando: ");
     scanf(" %[^\n]", nomeBusca);
 
-    encontrado = 0;
-    for(int i = 0, i < tot, i++)
+    int encontrado = 0;
+    for(int i = 0; i < tot; i++)
     {
         int res = compararTextos(p[i].nome, nomeBusca);
 
         if (res == 0) // PESSOA ENCONTRADA
         {
             printf("  ID    |   NOME    |    CRM    |    ESPECIALIDADE\n\n ");
-            printf("  %d         %s         %S         %s         \n", p[meio].id, p[meio].nome, p[meio].idade, p[meio].cpf, p[meio].telefone);
+            printf("  %d         %s         %S         %s         \n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
             encontrado = 1;
             return;
         }
@@ -656,13 +657,185 @@ void buscarMedicoNomeLinear(medico m[], int tot);
 
 
 // FUNÇÃO 11 - AGENDAR CONSULTA
-void agendarConsulta(MYSQL *conn, consulta c[], int *tot)
+void agendarConsulta(MYSQL *conn, paciente p[], int totP, medico m[], int totM, consulta c[], int *totC)
 {
-    
+    if (*totC >= MAX_CONSULTAS)
+    {
+        printf("\nLimite de consultas atingida pelo banco de dados (%d consultas). Exclua ou arquive registros antigos.\n", MAX_CONSULTAS);
+        return;
+    }
 
+    consulta nova;
+    printf("\n--- AGENDAR CONSULTA ---\n");
+
+    printf("Informe o ID da Consulta: ");
+    scanf("%d", &nova.id);
+
+    printf("Informe o ID do Paciente: ");
+    scanf("%d", &nova.idPaciente);
+
+    // VERIFICAR SE O ID PACIENTE EXISTE
+    int pacienteExiste = 0;
+    for (int i = 0; i < totP; i++)
+    {
+        if (p[i].id == nova.idPaciente)
+        {
+            pacienteExiste = 1;
+            break;
+        }
+    }
     
+    if (pacienteExiste = 0)
+    {
+        printf("ID do paciente não encontrado! Saindo da Função");
+        return;
+    }
+
+    printf("Informe o ID do Medico: ");
+    scanf("%d", &nova.idMedico);
+
+    // VERIFICAR SE O ID MEDICO EXISTE
+    int medicoExiste = 0;
+    for (int i = 0; i < totM; i++)
+    {
+        if (m[i].id == nova.idMedico)
+        {
+            medicoExiste = 1;
+            break;
+        }
+    }
+
+    if (medicoExiste == 0)
+    {
+        printf("ID do medico não encontrado! Saindo da Função");
+        return;
+    }
+
+    // LEITURA DE DATA E HORA
+    printf("Informe a Data (DD/MM/AAAA): ");
+    scanf("%s", nova.data);
+
+    printf("Informe a Hora (HH:MM): ");
+    scanf("%s", nova.hora);
+
+    // VERIFICAR SE O MÉDICO TEM CONSULTA NESSA DATA E NESSE HORARIO
+    for (int i = 0; i < *totC; i++)
+    {
+        if (c[i].idMedico == nova.idMedico && 
+            compararTextos(c[i].data, nova.data) == 0 && 
+            compararTextos(c[i].hora, nova.hora) == 0)
+        {
+            printf("\n ATENÇÃO! O medico ja possui uma consulta agendada no dia %s as %s!\n", 
+                   nova.data, nova.hora);
+            return;
+        }
+    }
+
+    // COLOCAR A NOVA CONSULTA NO BANCO DE DADOS
+    char query[300];
+    sprintf(query, "INSERT INTO consulta (id, id_paciente, id_medico, data, hora) VALUES (%d, %d, %d, '%s', '%s');",
+            nova.id, nova.idPaciente, nova.idMedico, nova.data, nova.hora);
+
+    if (mysql_query(conn, query) == 0)
+    {
+        c[*totC] = nova;
+        (*totC)++;
+        printf("Consulta agendada com sucesso!\n");
+    }
+    else
+    {
+        printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+    }
 }
 
 
+// FUNÇÃO 12 - CANCELAR CONSULTA
+void cancelarConsulta(MYSQL *conn, consulta c[], int *tot)
+{
+    if (*tot == 0)
+        {
+            printf("\nNenhuma consulta agendada no sistema.\n");
+            return;
+        }
+
+    int idCancelar;
+    printf("\n--- CANCELAR CONSULTA ---\n");
+    printf("Informe o ID da consulta que deseja cancelar: ");
+    scanf("%d", &idCancelar);
+
+    for (int i = 0; i < *tot; i++)
+    {
+        if (c[i].id == idCancelar)
+        {
+            int op;
+            printf("Prestes a cancelar a Consulta ID %d (Data: %s as %s). Confirma?\n1 - Sim | 2 - Nao: ", 
+                   c[i].id, c[i].data, c[i].hora);
+            scanf("%d", &op);
+
+            if (op != 1)
+            {
+                printf("Operacao cancelada.\n");
+                return;
+            }
+
+            // DELETAR DO BANCO DE DADOS
+            char query[300];
+            sprintf(query, "DELETE FROM consulta WHERE id=%d;", idCancelar);
+
+            if (mysql_query(conn, query) == 0)
+            {
+                // ORGANIZA O VETOR PARA N DEIXAR ESPACOS VAZIOS
+                for (int j = i; j < *tot - 1; j++)
+                {
+                    c[j] = c[j + 1];
+                }
+
+                (*tot)--;
+                printf("Consulta ID %d cancelada e removida do sistema!\n", idCancelar);
+            }
+            else
+            {
+                printf("[ERRO MYSQL] %s\n", mysql_error(conn));
+            }
+            return; 
+        }
+    }
+
+    printf("Consulta com ID %d nao foi encontrada!\n", idCancelar);
+}
+
+
+// FUNÇÃO 13 - LISTAR AS CONSULTAS POR PACIENTE
+void listarConsultasPorPaciente(consulta c[], int tot)
+{
+    if (tot == 0)
+    {
+        printf("\nNenhuma consulta agendada no sistema.");
+        return;
+    }
+
+    int idpaciente;
+    printf("Informe o ID do paciente que deseja consultar: ");
+    scanf("%d", &idpaciente);
+
+    printf("  ID CONSULTA    |   ID PACIENTE    |    ID MEDICO    |    DIA    |    HORA\n\n ");
+    for (int i = 0; i<tot; i++)
+    {
+        if(c[i].idPaciente == idpaciente)
+        {
+            printf("  %d         %d         %d         %s         %s\n", c[i].id, c[i].idPaciente, c[i].idMedico, c[i].data, c[i].hora);
+        }
+    }
+
+    printf("Finalizado");
+    return;
+}
+
+
+// FUNÇÃO 14 - LISTAR AS CONSULTAS POR MÉDICO
+void listarConsultasPorMedico(consulta c[], int tot)
+{
+
+}
 
 
