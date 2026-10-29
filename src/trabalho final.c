@@ -835,7 +835,28 @@ void listarConsultasPorPaciente(consulta c[], int tot)
 // FUNÇÃO 14 - LISTAR AS CONSULTAS POR MÉDICO
 void listarConsultasPorMedico(consulta c[], int tot)
 {
+    if (tot == 0)
+    {
+        printf("\nNenhuma consulta agendada no sistema.");
+        return;
+    }
 
+    int idmedico;
+    printf("Informe o ID do medico que deseja consultar: ");
+    scanf("%d", &idmedico);
+
+    printf("  ID CONSULTA    |   ID PACIENTE    |    ID MEDICO    |    DIA    |    HORA\n\n ");
+    for (int i = 0; i<tot; i++)
+    {
+        if(c[i].idMedico == idmedico)
+        {
+            printf("  %d         %d         %d         %s         %s\n", c[i].id, c[i].idPaciente, c[i].idMedico, c[i].data, c[i].hora);
+        }
+    }
+
+    printf("Finalizado");
+    return;
+    
 }
 
 
