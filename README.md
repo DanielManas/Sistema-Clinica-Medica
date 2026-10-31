@@ -20,6 +20,8 @@ Pedro Bender da Silva Prado
 
 Jhonny Kuanyu Wang
 
+Lais De Paula Carneiro
+
 ## Descrição do Projeto
 
 O projeto consiste no desenvolvimento de um Sistema de Clínica Médica em linguagem C, integrado a um banco de dados MySQL.
