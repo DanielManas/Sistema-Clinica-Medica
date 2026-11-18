@@ -147,7 +147,7 @@ int main()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// 2. FUNÇÃO PRÓPRIA DE COMPARAÇÃO DE TEXTO (Sem <string.h>)  
+// 2. FUNÇÃO PRÓPRIA DE COMPARAÇÃO DE TEXTO
 // ESSA FUNÇÃO VAI SER USADA EM FUNÇÕES DE ORDENAÇÃO DE NOME COMO NA FUNÇÃO 5 E 6
 
 
