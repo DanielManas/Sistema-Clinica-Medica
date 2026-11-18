@@ -75,7 +75,7 @@ Usada na pesquisa de paciente por nome (opção 7). Como a busca binária exige 
  
 ### Bubble Sort
  
-Implementado diretamente em C para ordenar pacientes por nome (opção 5) e por idade (opção 6). A comparação de nomes é feita pela função própria `compararTextos`, sem uso de `<string.h>`.
+Implementado para ordenar pacientes por nome (opção 5) e por idade (opção 6). A comparação de nomes é feita pela função própria `compararTextos`.
  
 ### Ponteiros e passagem por referência
  
