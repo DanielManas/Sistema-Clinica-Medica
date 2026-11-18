@@ -64,17 +64,25 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 
 
 ## Algoritmos Implementados
-
+ 
 ### Busca Linear
-
-Será utilizada para realizar pesquisas percorrendo sequencialmente um array de structs até encontrar o registro desejado.
-
+ 
+Usada na pesquisa de médico por nome (opção 10). Percorre sequencialmente o array de structs até encontrar o registro desejado.
+ 
 ### Busca Binária
-
-Será implementada uma busca binária sobre dados previamente ordenados.
-
-Como a busca binária exige que os dados estejam ordenados, o sistema realizará a ordenação necessária antes da execução da busca.
-
-* Listar consultas de determinado paciente;
-
-* Listar consultas de determinado médico.
+ 
+Usada na pesquisa de paciente por nome (opção 7). Como a busca binária exige dados ordenados, o sistema só permite a busca depois que a lista de pacientes foi ordenada por nome (opção 5).
+ 
+### Bubble Sort
+ 
+Implementado diretamente em C para ordenar pacientes por nome (opção 5) e por idade (opção 6). A comparação de nomes é feita pela função própria `compararTextos`, sem uso de `<string.h>`.
+ 
+### Ponteiros e passagem por referência
+ 
+- `MYSQL *conn` é passado às funções que acessam o banco;
+- contadores como `int *tot` e a flag `int *ordenado` são alterados dentro das funções;
+- os arrays de structs (`paciente p[]`, `medico m[]`, `consulta c[]`) são passados por referência.
+## Banco de Dados e Biblioteca
+ 
+- **Banco de dados:** MySQL
+- **Biblioteca/driver:** MySQL C API (`libmysqlclient`, cabeçalho `mysql.h`)
