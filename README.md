@@ -12,7 +12,7 @@ Pedro Bender da Silva Prado - 10743385
 
 Jhonny Kuanyu Wang - 10438969
 
-Lais De Paula Carneiro
+Lais De Paula Carneiro - 10418061
 
 André Ramos Cancelo - 10772065
 
@@ -31,18 +31,17 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 ### Pacientes
 
 * Cadastrar pacientes;
-
 * Alterar dados de pacientes;
 
-* Excluir pacientes;
+Excluir pacientes;
 
-* Listar pacientes cadastrados;
+Listar pacientes cadastrados;
 
-* Pesquisar pacientes;
+Pesquisar pacientes por nome (busca binária);
 
-* Ordenar pacientes por nome;
+Ordenar pacientes por nome;
 
-* Ordenar pacientes por idade.
+Ordenar pacientes por idade.
 
 ### Médicos
 
