@@ -291,6 +291,7 @@ void alterarPaciente(MYSQL *conn, paciente p[], int tot)
     if (tot == 0)
     {
         printf("Não tem nenhum paciente no banco de dados\n");
+        return;
     }
 
     int idalterarpaciente;
@@ -303,15 +304,12 @@ void alterarPaciente(MYSQL *conn, paciente p[], int tot)
         if (p[i].id == idalterarpaciente) 
         {
             int op;
-            printf("Esta prestes a alterar dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não", p[i].nome);
+            printf("Esta prestes a alterar dados do paciente %s. Deseja continuar?\n 1 - Sim 2 - Não\n", p[i].nome);
             scanf("%d", &op);
-            if (op != 1 && op != 2)
+            if (op != 1)
             {
-                break;
-            }
-            if (op == 2)
-            {
-                break;
+                printf("OPERAÇÃO CANCELADA!\n");
+                return;
             }
 
             paciente temp;
@@ -345,6 +343,9 @@ void alterarPaciente(MYSQL *conn, paciente p[], int tot)
             }
             return; 
         }  
+    }
+
+    printf("Paciente não encontrado!\n");
 }
 
 // FUNÇÃO 3 - EXCLUIR PACIENTE
@@ -571,10 +572,10 @@ void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
         scanf(" %[^\n]", novo.nome);
         
         printf("CRM: "); 
-        scanf("%s", &novo.crm);
+        scanf("%s", novo.crm);
         
         printf("Especialidade: "); 
-        scanf("%s", novo.especialidade);
+        scanf(" %[^\n]", novo.especialidade);
     
         
         //MONTA O COMANDO EM SQL PARA SER ENVIADO AO MYSQL
@@ -586,7 +587,6 @@ void cadastrarMedico(MYSQL *conn, medico m[], int *tot)
         {
             m[*tot] = novo;
             (*tot)++;
-            *ordenado = 0; // Novo item desordena a lista por nome
             printf("[SUCESSO] Medico cadastrado no banco e na RAM!\n");
         } 
         else 
@@ -631,12 +631,12 @@ void buscarMedicoNomeLinear(medico m[], int tot)
     int encontrado = 0;
     for(int i = 0; i < tot; i++)
     {
-        int res = compararTextos(p[i].nome, nomeBusca);
+        int res = compararTextos(m[i].nome, nomeBusca);
 
         if (res == 0) // PESSOA ENCONTRADA
         {
             printf("  ID    |   NOME    |    CRM    |    ESPECIALIDADE\n\n ");
-            printf("  %d         %s         %S         %s         \n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
+            printf("  %d         %s         %s         %s         \n", m[i].id, m[i].nome, m[i].crm, m[i].especialidade);
             encontrado = 1;
             return;
         }
@@ -679,7 +679,7 @@ void agendarConsulta(MYSQL *conn, paciente p[], int totP, medico m[], int totM, 
         }
     }
     
-    if (pacienteExiste = 0)
+    if (pacienteExiste == 0)
     {
         printf("ID do paciente não encontrado! Saindo da Função");
         return;
