@@ -31,35 +31,32 @@ Os dados serão manipulados pelo programa em C e armazenados no banco de dados, 
 ### Pacientes
 
 * Cadastrar pacientes;
+
 * Alterar dados de pacientes;
 
-Excluir pacientes;
+* Excluir pacientes;
 
-Listar pacientes cadastrados;
+* Listar pacientes cadastrados;
 
-Pesquisar pacientes por nome (busca binária);
+* Pesquisar pacientes por nome (busca binária);
 
-Ordenar pacientes por nome;
+* Ordenar pacientes por nome;
 
-Ordenar pacientes por idade.
+* Ordenar pacientes por idade.
 
 ### Médicos
 
-* Cadastrar médicos;
-
-* Cadastrar e identificar suas especialidades;
+* Cadastrar médicos e suas especialidades;
 
 * Listar médicos cadastrados;
 
-* Pesquisar médicos.
+* Pesquisar médicos por nome (busca linear).
 
 ### Consultas
 
-* Agendar consultas;
+* Agendar consultas (impedindo dois agendamentos do mesmo médico no mesmo dia e horário);
 
 * Cancelar consultas;
-
-* Listar consultas;
 
 * Listar consultas de determinado paciente;
 
