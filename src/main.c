@@ -70,6 +70,8 @@ void listarConsultasPorMedico(consulta c[], int tot);
 
 int main() 
 {
+
+    //CONECTA COM O BANCO DE DADOS
     MYSQL *conn = conectarMySQL();
     if (conn == NULL) 
     {
